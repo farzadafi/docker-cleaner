@@ -1,7 +1,8 @@
 package ir.farzadafi.dto;
 
 import java.util.List;
+import java.util.Map;
 
 public record DockerInstruction(String type,
-                                List<Object> value) {
+                                List<Map<String, Object>> value) {
 }
