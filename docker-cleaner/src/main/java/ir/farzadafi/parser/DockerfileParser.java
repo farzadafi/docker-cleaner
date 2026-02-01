@@ -3,6 +3,7 @@ package ir.farzadafi.parser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import ir.farzadafi.dto.DockerInstruction;
+import ir.farzadafi.exception.DockerFileParseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,16 +25,16 @@ public class DockerfileParser {
     @Value("${node.working.dir}")
     private String workDir;
 
-
     public List<DockerInstruction> parseDockerfile(String dockerfilePath) {
         try {
             String jsonOutput = runNodeParser(jsScriptPath, dockerfilePath);
-            CollectionType type = mapper.getTypeFactory().constructCollectionType(List.class, DockerInstruction.class);
+            CollectionType type = mapper.getTypeFactory()
+                    .constructCollectionType(List.class, DockerInstruction.class);
             return mapper.readValue(jsonOutput, type);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Parse error", e);
+            throw new DockerFileParseException(e.getMessage());
         }
-        return null;
     }
 
     private String runNodeParser(String scriptPath, String dockerfilePath) throws Exception {
