@@ -14,7 +14,7 @@ public class DockerAnalysisReport {
         findings.add(finding);
     }
 
-    public boolean hasFindings() {
-        return !findings.isEmpty();
+    public boolean isClean() {
+        return findings.isEmpty();
     }
 }
