@@ -73,8 +73,12 @@ public class DockerfileAnalyzeAndFixService {
 
     private File createCleanedFilePath(String dockerfilePath) {
         File originalFile = new File(dockerfilePath);
+        File cleanDir = new File(originalFile.getParentFile(), "clean");
+        if (!cleanDir.exists()) {
+            cleanDir.mkdirs();
+        }
         String cleanedFileName = "cleaned_" + originalFile.getName();
-        return new File(originalFile.getParent(), cleanedFileName);
+        return new File(cleanDir, cleanedFileName);
     }
 
     private void writeLinesToFile(File outputFile, List<String> lines) throws IOException {
