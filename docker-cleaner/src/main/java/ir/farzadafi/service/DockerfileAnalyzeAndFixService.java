@@ -30,6 +30,8 @@ public class DockerfileAnalyzeAndFixService {
         List<DockerInstruction> rawInstructions = parseDockerfile(dockerfilePath);
         List<SemanticDockerInstruction> semanticInstructions = mapToSemanticInstructions(rawInstructions);
         DockerAnalysisReport reportBeforeFix = analyzeSecuritySmells(semanticInstructions);
+        if (reportBeforeFix.isClean())
+            return buildResult(reportBeforeFix, dockerfilePath);
         List<SemanticDockerInstruction> fixedInstructions = fixAllSmells(semanticInstructions);
         List<String> fixedLines = renderDockerfileLines(fixedInstructions);
         String cleanedPath = saveCleanedDockerfile(dockerfilePath, fixedLines);
