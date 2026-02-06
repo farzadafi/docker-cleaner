@@ -17,6 +17,8 @@ public class DockerfileInstructionRenderer {
             return renderCopy(src, dest);
         if (instruction instanceof UnknownInstruction(String raw, int line))
             return raw;
+        if (instruction instanceof UserInstruction user)
+            return renderUser(user.user());
         return "";
     }
 
@@ -38,5 +40,9 @@ public class DockerfileInstructionRenderer {
         if (src == null || src.isBlank() || dest == null || dest.isBlank())
             return "";
         return "COPY " + src + " " + dest;
+    }
+
+    private String renderUser(String user) {
+        return "USER " + user;
     }
 }
