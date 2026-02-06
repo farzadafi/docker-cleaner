@@ -1,0 +1,251 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dockerfile Security Analyzer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/_sdk/element_sdk.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body class="h-full gradient-bg text-white overflow-auto scrollbar-custom">
+<div class="min-h-full w-full">
+    <!-- Header -->
+    <header class="glass-card border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <!-- Docker + Security Logo -->
+                    <div class="relative">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center glow-effect">
+                            <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.186.186 0 00-.185.186v1.887c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.186.186 0 00-.185.185v1.888c0 .102.082.185.185.185m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.186.186 0 00-.185.185v1.888c0 .102.082.185.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.186.186 0 00-.185-.185H8.1a.186.186 0 00-.185.185v1.888c0 .102.083.185.185.186m-2.964 0h2.119a.186.186 0 00.185-.186V6.29a.186.186 0 00-.185-.185H5.136a.186.186 0 00-.186.185v1.888c0 .102.084.185.186.186m5.893 2.715h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.186.186 0 00-.185.186v1.887c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.186v1.887c0 .102.083.185.185.185m-2.964 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.185-.186h-2.119a.185.185 0 00-.186.186v1.887c0 .102.084.185.186.185m-2.92 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.186.186 0 00-.186.186v1.887c0 .102.084.185.186.185m10.838 2.715h2.119a.186.186 0 00.185-.185V11.89a.186.186 0 00-.185-.186h-2.119a.186.186 0 00-.185.186v1.887c0 .102.082.185.185.185M23.7 11.07c-.57-.49-1.496-.693-2.294-.563-.11-.89-.568-1.665-1.249-2.293l-.424-.357-.36.42c-.46.536-.726 1.278-.653 2.007.03.262.108.507.21.737a2.87 2.87 0 01-1.2.345H.453c-.252 0-.456.203-.456.455 0 2.042.608 4.088 1.873 5.557 1.404 1.63 3.504 2.413 6.238 2.413 5.94 0 10.34-2.73 12.41-8.63.81.015 1.62-.093 2.21-.485l.317-.216-.249-.304z"/>
+                            </svg>
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-gradient-to-br from-green-500 to-emerald-400 flex items-center justify-center border-2 border-slate-900">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="text-center md:text-right">
+                        <h1 id="system-title" class="text-2xl md:text-3xl font-bold bg-gradient-to-l from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                            Dockerfile Security Analyzer
+                        </h1>
+                        <p id="system-subtitle" class="text-slate-400 text-sm md:text-base mt-1">
+                            تحلیل و رفع خودکار آسیب‌پذیری‌های امنیتی در فایل‌های Docker
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="flex gap-3">
+                    <div class="stat-card rounded-xl px-4 py-3 text-center">
+                        <div class="text-2xl font-bold text-blue-400" id="total-scans">0</div>
+                        <div class="text-xs text-slate-400">تحلیل انجام‌شده</div>
+                    </div>
+                    <div class="stat-card rounded-xl px-4 py-3 text-center">
+                        <div class="text-2xl font-bold text-red-400" id="total-issues">0</div>
+                        <div class="text-xs text-slate-400">مشکل یافت‌شده</div>
+                    </div>
+                    <div class="stat-card rounded-xl px-4 py-3 text-center">
+                        <div class="text-2xl font-bold text-green-400" id="total-fixed">0</div>
+                        <div class="text-xs text-slate-400">رفع‌شده</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Left Column - Upload & Actions -->
+            <div class="space-y-6">
+                <!-- Upload Section -->
+                <div class="glass-card rounded-2xl p-6 glow-effect">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-white">بارگذاری Dockerfile</h2>
+                            <p class="text-sm text-slate-400">فایل مورد نظر را انتخاب یا رها کنید</p>
+                        </div>
+                    </div>
+
+                    <div id="upload-zone" class="upload-zone rounded-xl p-8 text-center cursor-pointer">
+                        <input type="file" id="file-input" class="hidden" accept=".dockerfile,Dockerfile,*">
+                        <div id="upload-content">
+                            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/20 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                            </div>
+                            <p class="text-white font-medium mb-2">کلیک کنید یا فایل را اینجا رها کنید</p>
+                            <p class="text-sm text-slate-400">فرمت‌های پشتیبانی: Dockerfile، فایل متنی</p>
+                        </div>
+                        <div id="file-selected" class="hidden">
+                            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <p class="text-green-400 font-medium mb-1">فایل انتخاب شد</p>
+                            <p id="file-name" class="text-white text-lg font-semibold"></p>
+                            <p id="file-size" class="text-sm text-slate-400 mt-1"></p>
+                            <button id="remove-file" class="mt-3 text-red-400 text-sm hover:text-red-300 transition-colors">
+                                ✕ حذف فایل
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="space-y-4">
+                        <button id="analyze-btn" disabled class="btn-primary w-full py-4 rounded-xl font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3">
+                            <svg id="analyze-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <svg id="analyze-spinner" class="w-5 h-5 spinner hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span id="analyze-text">شروع بررسی امنیتی</span>
+                        </button>
+
+                        <button id="fix-btn" disabled class="btn-success w-full py-4 rounded-xl font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                            <svg id="fix-spinner" class="w-5 h-5 spinner hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span id="fix-text">رفع خودکار مشکلات</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- API Configuration (Collapsible) -->
+                <div class="glass-card rounded-2xl overflow-hidden">
+                    <button id="api-toggle" class="w-full p-4 flex items-center justify-between text-left hover:bg-white/5 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <span class="text-white font-medium">تنظیمات API</span>
+                        </div>
+                        <svg id="api-chevron" class="w-5 h-5 text-slate-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="api-content" class="hidden p-4 pt-0 space-y-4">
+                        <div>
+                            <label for="api-analyze-url" class="block text-sm text-slate-400 mb-2">آدرس API تحلیل</label>
+                            <input type="url" id="api-analyze-url" value="http://localhost:8080/dockerfileAnalyze"
+                                   class="w-full bg-slate-800/50 border border-slate-600 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                   placeholder="http://localhost:8080/dockerfileAnalyze">
+                        </div>
+                        <div>
+                            <label for="api-fix-url" class="block text-sm text-slate-400 mb-2">آدرس API رفع مشکلات</label>
+                            <input type="url" id="api-fix-url" value="http://localhost:8000/api/fix"
+                                   class="w-full bg-slate-800/50 border border-slate-600 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                   placeholder="http://localhost:8000/api/fix">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Results -->
+            <div class="space-y-6">
+                <!-- Analysis Results -->
+                <div id="results-section" class="glass-card rounded-2xl p-6 hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-semibold text-white">نتایج تحلیل</h2>
+                                <p id="analyzed-file-name" class="text-sm text-slate-400"></p>
+                            </div>
+                        </div>
+                        <div id="issues-count" class="px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-sm font-medium">
+                            0 مشکل
+                        </div>
+                    </div>
+
+                    <div id="issues-list" class="space-y-3 max-h-96 overflow-y-auto scrollbar-custom">
+                        <!-- Issues will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Success Section (Fixed File Download) -->
+                <div id="success-section" class="glass-card rounded-2xl p-6 hidden">
+                    <div class="success-card rounded-xl p-6 text-center">
+                        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center pulse-animation">
+                            <svg class="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-green-400 mb-2">فایل با موفقیت اصلاح شد!</h3>
+                        <p class="text-slate-400 mb-6">تمامی مشکلات امنیتی شناسایی‌شده رفع شدند</p>
+                        <button id="download-btn" class="btn-success px-8 py-3 rounded-xl font-semibold text-white inline-flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            دانلود Dockerfile اصلاح‌شده
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="glass-card rounded-2xl p-12 text-center">
+                    <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-slate-800/50 flex items-center justify-center">
+                        <svg class="w-12 h-12 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-300 mb-2">آماده تحلیل</h3>
+                    <p class="text-slate-500 max-w-sm mx-auto">یک Dockerfile انتخاب کنید تا تحلیل امنیتی آغاز شود. نتایج در این بخش نمایش داده خواهد شد.</p>
+                </div>
+
+                <!-- Error Toast -->
+                <div id="error-toast" class="hidden fixed bottom-6 right-6 bg-red-500/90 backdrop-blur-lg text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-50 fade-in">
+                    <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span id="error-message">خطایی رخ داده است</span>
+                    <button id="close-error" class="mr-2 hover:bg-white/20 rounded-full p-1 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass-card border-t border-white/10 mt-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-400">
+                <p>پایان‌نامه کارشناسی ارشد فناوری اطلاعات</p>
+                <p>سامانه تحلیل امنیتی Dockerfile</p>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script src="../static/js/app.js"></script>
+</body>
+</html>
