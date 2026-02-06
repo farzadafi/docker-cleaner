@@ -220,17 +220,14 @@ analyzeBtn.addEventListener('click', async () => {
     analyzeText.textContent = 'در حال تحلیل...';
 
     try {
+//        const apiUrl = document.getElementById('api-analyze-url').value;
         const formData = new FormData();
         formData.append('file', selectedFile);
-
-        const apiUrl = document.getElementById('api-analyze-url').value;
-
-        // Simulated API call for demo (replace with actual fetch)
-        // In production, uncomment the fetch call below
-        /*
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            body: formData
+        // Assuming the path is the file name or a server-side path; adjust if path is different
+        const fullUrl = `${apiUrl}/analyze/formData`;
+//        const apiUrl = document.getElementById('api-analyze-url').value;
+        const response = await fetch(fullUrl, {
+            method: 'POST'
         });
 
         if (!response.ok) {
@@ -238,55 +235,6 @@ analyzeBtn.addEventListener('click', async () => {
         }
 
         analysisResult = await response.json();
-        */
-
-        // Demo data for presentation
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        analysisResult = {
-            filename: selectedFile.name,
-            issues: [
-                {
-                    id: 1,
-                    severity: 'high',
-                    title: 'استفاده از latest tag',
-                    description: 'استفاده از تگ latest باعث عدم قطعیت در نسخه ایمیج می‌شود',
-                    line: 1,
-                    recommendation: 'از تگ‌های نسخه‌دار مشخص استفاده کنید'
-                },
-                {
-                    id: 2,
-                    severity: 'critical',
-                    title: 'اجرا با کاربر root',
-                    description: 'کانتینر با دسترسی root اجرا می‌شود که خطر امنیتی دارد',
-                    line: 5,
-                    recommendation: 'یک کاربر غیر root ایجاد و از آن استفاده کنید'
-                },
-                {
-                    id: 3,
-                    severity: 'medium',
-                    title: 'عدم استفاده از multi-stage build',
-                    description: 'فایل‌های غیرضروری در ایمیج نهایی باقی می‌مانند',
-                    line: null,
-                    recommendation: 'از multi-stage build برای کاهش حجم استفاده کنید'
-                },
-                {
-                    id: 4,
-                    severity: 'low',
-                    title: 'عدم تعیین HEALTHCHECK',
-                    description: 'وضعیت سلامت کانتینر قابل بررسی نیست',
-                    line: null,
-                    recommendation: 'دستور HEALTHCHECK را اضافه کنید'
-                },
-                {
-                    id: 5,
-                    severity: 'high',
-                    title: 'استفاده از ADD به جای COPY',
-                    description: 'دستور ADD قابلیت‌های اضافی دارد که ممکن است ناخواسته باشند',
-                    line: 8,
-                    recommendation: 'برای کپی فایل‌های ساده از COPY استفاده کنید'
-                }
-            ]
-        };
 
         // Update stats
         stats.scans++;
