@@ -15,6 +15,7 @@ public class DockerInstructionMapper {
         return switch (raw.type()) {
             case "RUN" -> mapRun(raw);
             case "ADD" -> mapAdd(raw);
+            case "USER" -> mapUser(raw);
             case "COPY" -> mapCopy(raw);
             default -> mapUnknown(raw);
         };
@@ -48,6 +49,13 @@ public class DockerInstructionMapper {
         if (tokens.size() < 2)
             return new CopyInstruction("", "", line);
         return new CopyInstruction(tokens.get(0), tokens.get(1), line);
+    }
+
+    private UserInstruction mapUser(DockerInstruction raw) {
+        List<String> tokens = getTokenValues(raw);
+        int line = getLine(raw);
+        String user = tokens.isEmpty() ? "" : tokens.getFirst();
+        return new UserInstruction(user, line);
     }
 
     private UnknownInstruction mapUnknown(DockerInstruction raw) {
