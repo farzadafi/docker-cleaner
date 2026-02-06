@@ -4,6 +4,7 @@ public sealed interface SemanticDockerInstruction
         permits AddInstruction,
         CopyInstruction,
         RunInstruction,
-        UnknownInstruction {
+        UnknownInstruction,
+        UserInstruction {
     int line();
 }
