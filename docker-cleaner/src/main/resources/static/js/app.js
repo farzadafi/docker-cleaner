@@ -220,21 +220,30 @@ analyzeBtn.addEventListener('click', async () => {
     analyzeText.textContent = 'در حال تحلیل...';
 
     try {
-//        const apiUrl = document.getElementById('api-analyze-url').value;
         const formData = new FormData();
         formData.append('file', selectedFile);
-        // Assuming the path is the file name or a server-side path; adjust if path is different
-        const fullUrl = `${apiUrl}/analyze/formData`;
-//        const apiUrl = document.getElementById('api-analyze-url').value;
+
+        // API: POST /api/dockerfileAnalyze/analyze
+        const fullUrl = `${window.location.origin}/api/dockerfile-analyze/analyze`;
+
         const response = await fetch(fullUrl, {
-            method: 'POST'
+            method: 'POST',
+            body: formData
         });
 
         if (!response.ok) {
             throw new Error('خطا در برقراری ارتباط با سرور');
         }
 
-        analysisResult = await response.json();
+        // خروجی جدید: آرایه از DockerAnalyzeResponseDto
+        const issues = await response.json();
+
+        // برای اینکه بقیه کدهای پروژه‌ات بهم نریزه،
+        // یک مدل مشابه قبلی می‌سازیم:
+        analysisResult = {
+            filename: selectedFile.name,
+            issues: Array.isArray(issues) ? issues : []
+        };
 
         // Update stats
         stats.scans++;
@@ -265,7 +274,20 @@ function displayResults(result) {
 
     issuesList.innerHTML = '';
 
+    // اگر هیچ مشکلی نبود
+    if (result.issues.length === 0) {
+        resultsSection.classList.add('hidden');
+        successSection.classList.remove('hidden');
+        fixBtn.disabled = true;
+        return;
+    }
+
     result.issues.forEach((issue, index) => {
+
+        // severity از بک میاد مثل: CRITICAL, HIGH, MEDIUM, LOW
+        // ولی اینجا ما map می‌کنیم به lowercase که با css قبلی هماهنگ شه
+        const severityKey = (issue.severity || "LOW").toLowerCase();
+
         const severityColors = {
             critical: 'bg-red-600',
             high: 'bg-orange-500',
@@ -286,25 +308,37 @@ function displayResults(result) {
 
         issueCard.innerHTML = `
             <div class="flex items-start gap-3">
-                <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center mt-1">
-                    <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                <div class="flex-shrink-0 w-8 h-8 rounded-lg ${severityColors[severityKey] || 'bg-blue-500'} /20 flex items-center justify-center mt-1">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
                 </div>
+
                 <div class="flex-grow">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="font-semibold text-white">${issue.title}</span>
-                        <span class="px-2 py-0.5 rounded text-xs ${severityColors[issue.severity]} text-white">
-                            ${severityLabels[issue.severity]}
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        <span class="font-semibold text-white">${issue.title || 'Unknown Issue'}</span>
+
+                        <span class="px-2 py-0.5 rounded text-xs ${severityColors[severityKey] || 'bg-blue-500'} text-white">
+                            ${severityLabels[severityKey] || 'نامشخص'}
                         </span>
-                        ${issue.line ? `<span class="text-xs text-slate-500">خط ${issue.line}</span>` : ''}
+
+                        ${(issue.line && issue.line > 0)
+            ? `<span class="text-xs text-slate-500">خط ${issue.line}</span>`
+            : ''
+        }
                     </div>
-                    <p class="text-sm text-slate-400 mb-2">${issue.description}</p>
+
+                    <p class="text-sm text-slate-400 mb-2">
+                        ${issue.description || ''}
+                    </p>
+
                     <div class="flex items-center gap-2 text-xs text-green-400">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
-                        <span>${issue.recommendation}</span>
+                        <span>${issue.recommendation || ''}</span>
                     </div>
                 </div>
             </div>
@@ -316,6 +350,7 @@ function displayResults(result) {
     // Enable fix button if there are issues
     fixBtn.disabled = result.issues.length === 0;
 }
+
 
 // ====================================
 // Fix Handler
@@ -333,7 +368,7 @@ fixBtn.addEventListener('click', async () => {
         formData.append('file', selectedFile);
         formData.append('issues', JSON.stringify(analysisResult.issues));
 
-        const apiUrl = document.getElementById('api-fix-url').value;
+        // const apiUrl = document.getElementById('api-fix-url').value;
 
         // Simulated API call for demo
         /*
