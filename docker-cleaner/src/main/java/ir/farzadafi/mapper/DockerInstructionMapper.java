@@ -17,6 +17,7 @@ public class DockerInstructionMapper {
             case "ADD" -> mapAdd(raw);
             case "USER" -> mapUser(raw);
             case "COPY" -> mapCopy(raw);
+            case "ENV" -> mapEnv(raw);
             default -> mapUnknown(raw);
         };
     }
@@ -65,6 +66,27 @@ public class DockerInstructionMapper {
         } catch (Exception ignored) {
         }
         return new UnknownInstruction(raw.type(), line);
+    }
+
+    private EnvInstruction mapEnv(DockerInstruction raw) {
+        List<String> tokens = getTokenValues(raw);
+        int line = getLine(raw);
+        if (tokens.isEmpty())
+            return new EnvInstruction("", "", line);
+        String joined = String.join(" ", tokens).trim();
+        if (joined.contains("=")) {
+            String[] parts = joined.split("=", 2);
+            String key = parts[0].trim();
+            String value = parts.length > 1 ? parts[1].trim() : "";
+            return new EnvInstruction(key, value, line);
+        }
+        if (tokens.size() >= 2) {
+            String key = tokens.getFirst().trim();
+            String value = String.join(" ", tokens.subList(1, tokens.size())).trim();
+            return new EnvInstruction(key, value, line);
+        }
+
+        return new EnvInstruction(tokens.getFirst().trim(), "", line);
     }
 
     private List<String> getTokenValues(DockerInstruction raw) {
