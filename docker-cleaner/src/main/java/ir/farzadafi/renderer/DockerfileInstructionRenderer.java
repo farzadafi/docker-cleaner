@@ -19,6 +19,8 @@ public class DockerfileInstructionRenderer {
             return raw;
         if (instruction instanceof UserInstruction user)
             return renderUser(user.user());
+        if (instruction instanceof EnvInstruction env)
+            return renderEnv(env);
         return "";
     }
 
@@ -44,5 +46,13 @@ public class DockerfileInstructionRenderer {
 
     private String renderUser(String user) {
         return "USER " + user;
+    }
+
+    private String renderEnv(EnvInstruction env) {
+        if (env.key() == null || env.key().isBlank())
+            return "";
+        if (env.value() == null || env.value().isBlank())
+            return "ENV " + env.key();
+        return "ENV " + env.key() + "=" + env.value();
     }
 }
