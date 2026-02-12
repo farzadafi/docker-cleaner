@@ -3,3 +3,6 @@ node:
     path: /home/farzad/Downloads/college/seminar/docker-cleaner/dataset/parse.js
   working:
     dir: /home/farzad/Downloads/college/seminar/docker-cleaner/dataset/
+
+server:
+  port: 8080

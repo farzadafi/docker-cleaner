@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/dockerfileAnalyze")
+@RequestMapping("/api/dockerfileAnalyze")
 public class AnalyzerController {
     private final DockerfileAnalyzerService analyzerService;
 
