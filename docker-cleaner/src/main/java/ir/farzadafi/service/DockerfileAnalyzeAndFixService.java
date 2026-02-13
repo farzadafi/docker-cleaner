@@ -5,7 +5,7 @@ import ir.farzadafi.dto.DockerInstruction;
 import ir.farzadafi.fixer.DockerSmellFixer;
 import ir.farzadafi.mapper.DockerInstructionMapper;
 import ir.farzadafi.model.semantic.SemanticDockerInstruction;
-import ir.farzadafi.parser.DockerfileParser;
+import ir.farzadafi.parser.PureJavaDockerfileParser;
 import ir.farzadafi.renderer.DockerfileInstructionRenderer;
 import ir.farzadafi.report.DockerAnalysisReport;
 import lombok.RequiredArgsConstructor;
@@ -14,20 +14,21 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class DockerfileAnalyzeAndFixService {
-
-    private final DockerfileParser parser;
     private final DockerInstructionMapper mapper;
     private final DockerfileInstructionRenderer renderer;
     private final DockerSecurityAnalyzer analyzer;
     private final List<DockerSmellFixer> fixers;
+    private final PureJavaDockerfileParser pureJavaDockerfileParser;
 
     public DockerFixResult analyzeAndFix(String dockerfilePath) throws IOException {
-        List<DockerInstruction> rawInstructions = parseDockerfile(dockerfilePath);
+        List<DockerInstruction> rawInstructions = pureJavaDockerfileParser.parseDockerfile(dockerfilePath);
+        System.out.println(rawInstructions.get(1));
         List<SemanticDockerInstruction> semanticInstructions = mapToSemanticInstructions(rawInstructions);
         DockerAnalysisReport reportBeforeFix = analyzeSecuritySmells(semanticInstructions);
         if (reportBeforeFix.isClean())
@@ -36,10 +37,6 @@ public class DockerfileAnalyzeAndFixService {
         List<String> fixedLines = renderDockerfileLines(fixedInstructions);
         String cleanedPath = saveCleanedDockerfile(dockerfilePath, fixedLines);
         return buildResult(reportBeforeFix, cleanedPath);
-    }
-
-    private List<DockerInstruction> parseDockerfile(String dockerfilePath) {
-        return parser.parseDockerfile(dockerfilePath);
     }
 
     private List<SemanticDockerInstruction> mapToSemanticInstructions(List<DockerInstruction> rawInstructions) {

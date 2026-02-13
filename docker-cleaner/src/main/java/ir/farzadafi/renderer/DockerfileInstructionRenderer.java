@@ -9,6 +9,8 @@ import java.util.List;
 public class DockerfileInstructionRenderer {
 
     public String render(SemanticDockerInstruction instruction) {
+        if (instruction instanceof FromInstruction from)
+            return "FROM " + from.image();
         if (instruction instanceof RunInstruction(String cmd, List<String> args, int line))
             return renderRun(cmd, args);
         if (instruction instanceof AddInstruction(String src, String dest, int line))

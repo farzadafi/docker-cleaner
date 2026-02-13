@@ -4,6 +4,7 @@ import ir.farzadafi.dto.DockerInstruction;
 import ir.farzadafi.model.semantic.*;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ public class DockerInstructionMapper {
 
     public SemanticDockerInstruction map(DockerInstruction raw) {
         return switch (raw.type()) {
+            case "FROM" -> mapFrom(raw);
             case "RUN" -> mapRun(raw);
             case "ADD" -> mapAdd(raw);
             case "USER" -> mapUser(raw);
@@ -20,6 +22,13 @@ public class DockerInstructionMapper {
             case "ENV" -> mapEnv(raw);
             default -> mapUnknown(raw);
         };
+    }
+
+    private FromInstruction mapFrom(DockerInstruction raw) {
+        List<String> tokens = getTokenValues(raw);
+        int line = getLine(raw);
+        String image = tokens.isEmpty() ? "" : tokens.getFirst();
+        return new FromInstruction(image, line);
     }
 
     private RunInstruction mapRun(DockerInstruction raw) {
@@ -65,8 +74,14 @@ public class DockerInstructionMapper {
             line = getLine(raw);
         } catch (Exception ignored) {
         }
-        return new UnknownInstruction(raw.type(), line);
+        List<String> tokens = getTokenValues(raw);
+        String joinedTokens = String.join(" ", tokens).trim();
+        String full = raw.type();
+        if (!joinedTokens.isBlank())
+            full += " " + joinedTokens;
+        return new UnknownInstruction(full, line);
     }
+
 
     private EnvInstruction mapEnv(DockerInstruction raw) {
         List<String> tokens = getTokenValues(raw);
@@ -91,7 +106,7 @@ public class DockerInstructionMapper {
 
     private List<String> getTokenValues(DockerInstruction raw) {
         return raw.value().stream()
-                .map(v -> v.get("value").toString())
+                .map(v -> (String) v.get("value"))
                 .collect(Collectors.toList());
     }
 

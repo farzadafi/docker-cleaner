@@ -102,10 +102,12 @@ public class DockerSmellAptGetUpdateAloneIntegrationTest {
     }
 
     private boolean isDockerfile(File f) {
-        String name = f.getName().toLowerCase();
-        return name.endsWith(".dockerfile")
-                || name.contains("dockerfile");
+        String name = f.getName();
+        return name.equalsIgnoreCase("dockerfile")
+                || name.toLowerCase().endsWith(".dockerfile")
+                || name.toLowerCase().startsWith("dockerfile.");
     }
+
 
     private void printSummary(
             int totalFiles,
