@@ -1,7 +1,7 @@
 package ir.farzadafi.analyzer;
 
-import ir.farzadafi.analyzer.DockerSmellDetector;
 import ir.farzadafi.model.enumeration.SmellType;
+import ir.farzadafi.model.semantic.FromInstruction;
 import ir.farzadafi.model.semantic.SemanticDockerInstruction;
 import ir.farzadafi.model.semantic.UserInstruction;
 import ir.farzadafi.report.DockerAnalysisReport;
@@ -15,11 +15,14 @@ public class LastUserIsRootDetector implements DockerSmellDetector {
 
     @Override
     public void analyze(List<SemanticDockerInstruction> instructions, DockerAnalysisReport report) {
-        UserInstruction lastUser = findLastUserInstruction(instructions);
+        if (instructions == null || instructions.isEmpty())
+            return;
+        int stageStart = findLastStageStartIndex(instructions);
+        UserInstruction lastUser = findLastUserInFinalStage(instructions, stageStart);
         if (lastUser == null) {
             report.add(new SmellFinding(
                     SmellType.LAST_USER_IS_ROOT,
-                    "No USER instruction found. Docker runs as root by default.",
+                    "No USER instruction found in final stage. Docker runs as root by default.",
                     getLastLine(instructions)
             ));
             return;
@@ -28,17 +31,28 @@ public class LastUserIsRootDetector implements DockerSmellDetector {
         if (isRootUser(lastUser.user())) {
             report.add(new SmellFinding(
                     SmellType.LAST_USER_IS_ROOT,
-                    "Last USER is root. Switch to a non-root user at the end of Dockerfile.",
+                    "Last USER in final stage is root. Switch to a non-root user.",
                     lastUser.line()
             ));
         }
     }
 
-    private UserInstruction findLastUserInstruction(List<SemanticDockerInstruction> instructions) {
+    private int findLastStageStartIndex(List<SemanticDockerInstruction> instructions) {
+        int lastFromIndex = 0;
+        for (int i = 0; i < instructions.size(); i++) {
+            if (instructions.get(i) instanceof FromInstruction) {
+                lastFromIndex = i;
+            }
+        }
+        return lastFromIndex;
+    }
+
+    private UserInstruction findLastUserInFinalStage(List<SemanticDockerInstruction> instructions, int stageStart) {
         UserInstruction last = null;
-        for (SemanticDockerInstruction ins : instructions) {
-            if (ins instanceof UserInstruction u)
+        for (int i = stageStart; i < instructions.size(); i++) {
+            if (instructions.get(i) instanceof UserInstruction u) {
                 last = u;
+            }
         }
         return last;
     }
@@ -51,7 +65,6 @@ public class LastUserIsRootDetector implements DockerSmellDetector {
     }
 
     private int getLastLine(List<SemanticDockerInstruction> instructions) {
-        if (instructions == null || instructions.isEmpty()) return 1;
         return instructions.getLast().line();
     }
 }
