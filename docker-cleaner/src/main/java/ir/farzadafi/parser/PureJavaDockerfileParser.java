@@ -40,7 +40,7 @@ public class PureJavaDockerfileParser {
 
         for (String line : lines) {
             lineNumber++;
-            if (line == null || line.trim().isEmpty() || line.trim().startsWith("#")) continue;
+            if (line == null || line.trim().isEmpty()) continue;
 
             if (current != null) {
                 current.fullText.append("\n").append(line);
