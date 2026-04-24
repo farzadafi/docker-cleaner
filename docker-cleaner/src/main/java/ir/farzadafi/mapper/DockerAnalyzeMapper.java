@@ -35,7 +35,7 @@ public class DockerAnalyzeMapper {
 
     private static String getSeverity(SmellType type) {
         return switch (type) {
-            case HAVE_SECRETS_IN_ENV -> "CRITICAL";
+            case HAVE_SECRETS_IN_RUN, HAVE_SECRETS_IN_ENV -> "CRITICAL";
             case LAST_USER_IS_ROOT -> "HIGH";
             case ADD_INSTEAD_OF_COPY_OR_WGET -> "MEDIUM";
             case APT_GET_UPDATE_ALONE, APT_GET_NO_INSTALL_RECOMMENDS_MISSING -> "LOW";
@@ -55,6 +55,8 @@ public class DockerAnalyzeMapper {
 
             case LAST_USER_IS_ROOT -> "Create and switch to a non-root user for better container security.";
 
+            case HAVE_SECRETS_IN_RUN ->
+            "Do not store secrets in RUN. Use Docker secrets or runtime environment variables instead.";
             case HAVE_SECRETS_IN_ENV ->
                     "Do not store secrets in ENV. Use Docker secrets or runtime environment variables instead.";
         };
